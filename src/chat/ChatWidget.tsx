@@ -35,8 +35,14 @@ export type ChatWidgetProps = {
    * pk-* keys go through full IAM and are account-scoped.
    */
   authToken: string
-  /** Override the chat-docs endpoint. Default: https://api.hanzo.ai/v1/chat-docs */
+  /**
+   * Override the endpoint. Accepts two shapes:
+   *   - /v1/chat/completions (OpenAI — returns JSON or SSE) — default.
+   *   - /v1/chat-docs (AI SDK v4 data stream) — enables RAG.
+   */
   endpoint?: string
+  /** Model for /v1/chat/completions (ignored for chat-docs). Default: claude-haiku-4-5. */
+  model?: string
   /** Widget title. Default: "AI Assistant". */
   title?: string
   /** Subtitle. Default: "Ask anything". */
@@ -63,7 +69,8 @@ const DEFAULT_SUGGESTIONS = [
  */
 export const ChatWidget: React.FC<ChatWidgetProps> = ({
   authToken,
-  endpoint = 'https://api.hanzo.ai/v1/chat-docs',
+  endpoint = 'https://api.hanzo.ai/v1/chat/completions',
+  model = 'claude-haiku-4-5',
   title = 'AI Assistant',
   subtitle = 'Ask anything',
   pageContext,
@@ -101,36 +108,51 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }])
 
       try {
+        const isChatDocs = endpoint.includes('/chat-docs')
+        const body: Record<string, unknown> = { messages: withContext }
+        if (!isChatDocs) {
+          body.model = model
+          body.max_tokens = 500
+        }
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
           },
-          body: JSON.stringify({ messages: withContext }),
+          body: JSON.stringify(body),
           signal: controller.signal,
         })
         if (!res.ok || !res.body) {
           const err = await res.text().catch(() => res.statusText)
           throw new Error(err || 'request failed')
         }
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-        let buf = ''
-        while (true) {
-          const { value, done } = await reader.read()
-          if (done) break
-          buf += decoder.decode(value, { stream: true })
-          const lines = buf.split('\n')
-          buf = lines.pop() ?? ''
-          for (const line of lines) {
-            const parsed = parseStreamLine(line.trim())
-            if (!parsed) continue
-            if (parsed.type === 'text' && parsed.value) {
-              const token = parsed.value
-              setMessages((prev) =>
-                prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + token } : m)),
-              )
+        const ctype = res.headers.get('content-type') ?? ''
+        if (ctype.includes('application/json')) {
+          const data = (await res.json()) as { choices?: { message?: { content?: string } }[] }
+          const content = data?.choices?.[0]?.message?.content ?? ''
+          setMessages((prev) =>
+            prev.map((m) => (m.id === assistantId ? { ...m, content } : m)),
+          )
+        } else {
+          const reader = res.body.getReader()
+          const decoder = new TextDecoder()
+          let buf = ''
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+            buf += decoder.decode(value, { stream: true })
+            const lines = buf.split('\n')
+            buf = lines.pop() ?? ''
+            for (const line of lines) {
+              const parsed = parseStreamLine(line.trim())
+              if (!parsed) continue
+              if (parsed.type === 'text' && parsed.value) {
+                const token = parsed.value
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === assistantId ? { ...m, content: m.content + token } : m)),
+                )
+              }
             }
           }
         }
@@ -153,7 +175,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         abortRef.current = null
       }
     },
-    [authToken, busy, endpoint, messages, pageContext],
+    [authToken, busy, endpoint, messages, model, pageContext],
   )
 
   if (!open) {
