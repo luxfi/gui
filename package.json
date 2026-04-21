@@ -1,6 +1,6 @@
 {
   "name": "@luxfi/gui",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Lux UI chrome on @hanzo/gui (Tamagui) — responsive header, footer, primitives for lux apps",
   "license": "MIT",
   "repository": {
@@ -63,6 +63,10 @@
     "./nav": {
       "types": "./dist/nav/index.d.ts",
       "import": "./dist/nav/index.js"
+    },
+    "./chat": {
+      "types": "./dist/chat/index.d.ts",
+      "import": "./dist/chat/index.js"
     }
   },
   "scripts": {
