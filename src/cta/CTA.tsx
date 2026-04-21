@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { YStack, XStack, H2, Paragraph, Button } from '@hanzo/gui'
 
 export type LuxCtaProps = {
   title: React.ReactNode
@@ -9,19 +8,18 @@ export type LuxCtaProps = {
   renderLink?: (props: {
     href: string
     children: React.ReactNode
+    className?: string
   }) => React.ReactNode
-  /** Max container width in px. Default 1024. */
-  maxWidth?: number
+  /** Extra className applied to the outer `<section>`. */
+  className?: string
 }
 
-const DefaultLink = ({
+const DefaultLink: NonNullable<LuxCtaProps['renderLink']> = ({
   href,
   children,
-}: {
-  href: string
-  children: React.ReactNode
+  className,
 }) => (
-  <a href={href} style={{ textDecoration: 'none', color: 'inherit' }}>
+  <a href={href} className={className}>
     {children}
   </a>
 )
@@ -32,51 +30,39 @@ export const LuxCta: React.FC<LuxCtaProps> = ({
   primary,
   secondary,
   renderLink,
-  maxWidth = 1024,
+  className,
 }) => {
   const Link = renderLink ?? DefaultLink
   return (
-    <YStack
-      tag="section"
-      role="region"
-      ai="center"
-      px="$4"
-      py="$10"
-      bg="$background"
+    <section
+      className={
+        'px-6 py-24 bg-black' + (className ? ` ${className}` : '')
+      }
     >
-      <YStack
-        w="100%"
-        maxWidth={maxWidth}
-        ai="center"
-        gap="$4"
-        p="$8"
-        br="$6"
-        bw={1}
-        bc="$borderColor"
-      >
-        <H2 ta="center" fontSize="$10" fontWeight="700" lineHeight={1.1}>
+      <div className="max-w-4xl mx-auto flex flex-col items-center gap-4 p-8 rounded-3xl border border-white/10 text-center">
+        <h2 className="text-3xl md:text-5xl font-bold leading-tight text-white">
           {title}
-        </H2>
+        </h2>
         {subtitle ? (
-          <Paragraph ta="center" fontSize="$5" opacity={0.8} maxWidth={560}>
-            {subtitle}
-          </Paragraph>
+          <p className="text-lg text-white/80 max-w-xl">{subtitle}</p>
         ) : null}
-        <XStack gap="$3" mt="$2" flexWrap="wrap" jc="center">
-          <Link href={primary.href}>
-            <Button size="$5" themeInverse>
-              {primary.label}
-            </Button>
+        <div className="flex flex-wrap gap-3 mt-2 justify-center">
+          <Link
+            href={primary.href}
+            className="inline-flex items-center justify-center px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-white/90 transition-colors"
+          >
+            {primary.label}
           </Link>
           {secondary ? (
-            <Link href={secondary.href}>
-              <Button size="$5" chromeless>
-                {secondary.label}
-              </Button>
+            <Link
+              href={secondary.href}
+              className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-medium rounded-xl hover:bg-white/5 transition-colors"
+            >
+              {secondary.label}
             </Link>
           ) : null}
-        </XStack>
-      </YStack>
-    </YStack>
+        </div>
+      </div>
+    </section>
   )
 }

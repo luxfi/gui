@@ -1,6 +1,6 @@
 {
   "name": "@luxfi/gui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lux-branded UI chrome (Header, Footer, Hero, primitives) on top of @hanzo/gui (Tamagui)",
   "license": "MIT",
   "repository": {
@@ -64,7 +64,6 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "@hanzo/gui": ">=4.7.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },

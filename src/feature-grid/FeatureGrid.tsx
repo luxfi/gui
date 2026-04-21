@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { YStack, XStack, H3, Paragraph } from '@hanzo/gui'
 
 export type LuxFeature = {
   title: string
@@ -13,8 +12,14 @@ export type LuxFeatureGridProps = {
   features: readonly LuxFeature[]
   /** Columns on large screens. Default 3. */
   columns?: 2 | 3 | 4
-  /** Max container width in px. Default 1280. */
-  maxWidth?: number
+  /** Extra className applied to the outer `<section>`. */
+  className?: string
+}
+
+const gridCols: Record<2 | 3 | 4, string> = {
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
 }
 
 export const LuxFeatureGrid: React.FC<LuxFeatureGridProps> = ({
@@ -22,61 +27,42 @@ export const LuxFeatureGrid: React.FC<LuxFeatureGridProps> = ({
   eyebrow,
   features,
   columns = 3,
-  maxWidth = 1280,
-}) => {
-  // Tamagui Stack uses flex; we pick a width per item to achieve columns.
-  const widthPct = `${Math.floor(100 / columns) - 1}%`
-
-  return (
-    <YStack
-      tag="section"
-      role="region"
-      ai="center"
-      px="$4"
-      py="$10"
-      bg="$background"
-    >
-      <YStack w="100%" maxWidth={maxWidth} gap="$6">
-        {(eyebrow || heading) && (
-          <YStack gap="$2" maxWidth={640}>
-            {eyebrow ? (
-              <Paragraph
-                fontSize="$3"
-                textTransform="uppercase"
-                letterSpacing={2}
-                opacity={0.6}
-              >
-                {eyebrow}
-              </Paragraph>
-            ) : null}
-            {heading ? (
-              <H3 fontSize="$9" fontWeight="700" lineHeight={1.15}>
-                {heading}
-              </H3>
-            ) : null}
-          </YStack>
-        )}
-        <XStack flexWrap="wrap" gap="$4">
-          {features.map((f) => (
-            <YStack
-              key={f.title}
-              width={widthPct}
-              $sm={{ width: '100%' }}
-              gap="$2"
-              p="$4"
-              br="$4"
-              bw={1}
-              bc="$borderColor"
-            >
-              {f.icon ? <YStack>{f.icon}</YStack> : null}
-              <H3 fontSize="$6" fontWeight="600">
-                {f.title}
-              </H3>
-              <Paragraph opacity={0.8}>{f.description}</Paragraph>
-            </YStack>
-          ))}
-        </XStack>
-      </YStack>
-    </YStack>
-  )
-}
+  className,
+}) => (
+  <section
+    className={
+      'px-6 py-24 bg-black' + (className ? ` ${className}` : '')
+    }
+  >
+    <div className="max-w-7xl mx-auto flex flex-col gap-8">
+      {(eyebrow || heading) && (
+        <div className="flex flex-col gap-2 max-w-2xl">
+          {eyebrow ? (
+            <p className="text-xs tracking-widest uppercase text-white/60">
+              {eyebrow}
+            </p>
+          ) : null}
+          {heading ? (
+            <h2 className="text-3xl md:text-5xl font-bold leading-tight text-white">
+              {heading}
+            </h2>
+          ) : null}
+        </div>
+      )}
+      <div className={`grid gap-4 grid-cols-1 ${gridCols[columns]}`}>
+        {features.map((f) => (
+          <div
+            key={f.title}
+            className="flex flex-col gap-2 p-6 rounded-xl border border-white/10 bg-white/[0.02]"
+          >
+            {f.icon ? <div className="text-white mb-2">{f.icon}</div> : null}
+            <h3 className="text-lg font-semibold text-white">{f.title}</h3>
+            <p className="text-sm text-white/80 leading-relaxed">
+              {f.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)

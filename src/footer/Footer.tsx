@@ -1,35 +1,24 @@
 import * as React from 'react'
-import { XStack, YStack, Text, Separator } from '@hanzo/gui'
 import { LUX_PRODUCTS } from '../nav/products'
 
 export type LuxFooterProps = {
   renderLink?: (props: {
     href: string
     children: React.ReactNode
+    className?: string
   }) => React.ReactNode
-  /**
-   * Legal entity shown in the copyright line.
-   * Default: "Lux Industries Inc."
-   */
   legalEntity?: string
-  /**
-   * Override the copyright year. Defaults to current UTC year at render.
-   */
   year?: number
-  /**
-   * Extra rows (newsletter, social icons) rendered above the columns.
-   */
   topSlot?: React.ReactNode
+  className?: string
 }
 
-const DefaultLink = ({
+const DefaultLink: NonNullable<LuxFooterProps['renderLink']> = ({
   href,
   children,
-}: {
-  href: string
-  children: React.ReactNode
+  className,
 }) => (
-  <a href={href} style={{ textDecoration: 'none', color: 'inherit' }}>
+  <a href={href} className={className}>
     {children}
   </a>
 )
@@ -39,80 +28,54 @@ export const LuxFooter: React.FC<LuxFooterProps> = ({
   legalEntity = 'Lux Industries Inc.',
   year,
   topSlot,
+  className,
 }) => {
   const Link = renderLink ?? DefaultLink
   const displayYear = year ?? new Date().getUTCFullYear()
 
   return (
-    <YStack
-      tag="footer"
-      role="contentinfo"
-      px="$4"
-      py="$8"
-      gap="$6"
-      bg="$background"
-      btc="$borderColor"
-      btw={1}
+    <footer
+      className={
+        'py-10 sm:py-12 px-4 sm:px-6 bg-black border-t border-white/10' +
+        (className ? ` ${className}` : '')
+      }
     >
-      {topSlot}
+      <div className="max-w-7xl mx-auto flex flex-col gap-8">
+        {topSlot}
 
-      <XStack
-        gap="$8"
-        flexWrap="wrap"
-        $sm={{ flexDirection: 'column', gap: '$6' }}
-      >
-        {LUX_PRODUCTS.map((section) => (
-          <YStack key={section.section} gap="$2" minWidth={160}>
-            <Text
-              fontSize="$2"
-              opacity={0.5}
-              textTransform="uppercase"
-              letterSpacing={1}
-            >
-              {section.section}
-            </Text>
-            <YStack gap="$1">
-              {section.items.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <Text fontSize="$3" opacity={0.85}>
-                    {item.name}
-                  </Text>
-                </Link>
-              ))}
-            </YStack>
-          </YStack>
-        ))}
-      </XStack>
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {LUX_PRODUCTS.map((section) => (
+            <div key={section.section} className="flex flex-col gap-3">
+              <p className="text-xs text-white/50 uppercase tracking-widest">
+                {section.section}
+              </p>
+              <ul className="flex flex-col gap-2 text-sm text-white/80">
+                {section.items.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="hover:text-white transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
 
-      <Separator />
-
-      <XStack
-        jc="space-between"
-        ai="center"
-        $sm={{ flexDirection: 'column', gap: '$2' }}
-      >
-        <Text fontSize="$2" opacity={0.6}>
-          {'© '}
-          {displayYear} {legalEntity}. All rights reserved.
-        </Text>
-        <XStack gap="$4">
-          <Link href="https://lux.network/terms">
-            <Text fontSize="$2" opacity={0.6}>
-              Terms
-            </Text>
-          </Link>
-          <Link href="https://lux.network/privacy">
-            <Text fontSize="$2" opacity={0.6}>
-              Privacy
-            </Text>
-          </Link>
-          <Link href="https://status.lux.network">
-            <Text fontSize="$2" opacity={0.6}>
-              Status
-            </Text>
-          </Link>
-        </XStack>
-      </XStack>
-    </YStack>
+        <div className="pt-6 border-t border-white/10 flex flex-col gap-3 text-xs sm:text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+          <p>
+            &copy; {displayYear} {legalEntity}. All rights reserved.
+          </p>
+          <div className="flex gap-4 sm:gap-6">
+            <Link href="https://lux.network/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="https://lux.network/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="https://status.lux.network" className="hover:text-white transition-colors">Status</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }

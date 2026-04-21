@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { YStack, XStack, H1, H2, Paragraph, Button } from '@hanzo/gui'
 
 export type LuxHeroProps = {
   eyebrow?: string
@@ -15,19 +14,18 @@ export type LuxHeroProps = {
   renderLink?: (props: {
     href: string
     children: React.ReactNode
+    className?: string
   }) => React.ReactNode
-  /** Max container width in px. Default 1280. */
-  maxWidth?: number
+  /** Extra className applied to the outer `<section>`. */
+  className?: string
 }
 
-const DefaultLink = ({
+const DefaultLink: NonNullable<LuxHeroProps['renderLink']> = ({
   href,
   children,
-}: {
-  href: string
-  children: React.ReactNode
+  className,
 }) => (
-  <a href={href} style={{ textDecoration: 'none', color: 'inherit' }}>
+  <a href={href} className={className}>
     {children}
   </a>
 )
@@ -40,75 +38,57 @@ export const LuxHero: React.FC<LuxHeroProps> = ({
   secondaryCta,
   visual,
   renderLink,
-  maxWidth = 1280,
+  className,
 }) => {
   const Link = renderLink ?? DefaultLink
   return (
-    <YStack
-      tag="section"
-      role="region"
-      ai="center"
-      px="$4"
-      py="$10"
-      bg="$background"
+    <section
+      className={
+        'px-6 py-24 bg-black' + (className ? ` ${className}` : '')
+      }
     >
-      <XStack
-        w="100%"
-        maxWidth={maxWidth}
-        gap="$8"
-        ai="center"
-        jc="space-between"
-        $sm={{ flexDirection: 'column' }}
-      >
-        <YStack flex={1} gap="$4" maxWidth={640}>
+      <div className="max-w-7xl mx-auto flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex-1 flex flex-col gap-4 max-w-2xl">
           {eyebrow ? (
-            <Paragraph
-              fontSize="$3"
-              textTransform="uppercase"
-              letterSpacing={2}
-              opacity={0.6}
-            >
+            <p className="text-xs tracking-widest uppercase text-white/60">
               {eyebrow}
-            </Paragraph>
+            </p>
           ) : null}
-          <H1
-            fontSize={72}
-            lineHeight={1.05}
-            fontWeight="800"
-            $sm={{ fontSize: 48 }}
-          >
+          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.05] text-white">
             {title}
-          </H1>
+          </h1>
           {subtitle ? (
-            <Paragraph fontSize="$6" opacity={0.8} lineHeight={1.5}>
+            <p className="text-lg md:text-xl text-white/80 leading-relaxed">
               {subtitle}
-            </Paragraph>
+            </p>
           ) : null}
           {(primaryCta || secondaryCta) && (
-            <XStack gap="$3" mt="$2" flexWrap="wrap">
+            <div className="flex flex-wrap gap-3 mt-2">
               {primaryCta ? (
-                <Link href={primaryCta.href}>
-                  <Button size="$5" themeInverse>
-                    {primaryCta.label}
-                  </Button>
+                <Link
+                  href={primaryCta.href}
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-white/90 transition-colors"
+                >
+                  {primaryCta.label}
                 </Link>
               ) : null}
               {secondaryCta ? (
-                <Link href={secondaryCta.href}>
-                  <Button size="$5" chromeless>
-                    {secondaryCta.label}
-                  </Button>
+                <Link
+                  href={secondaryCta.href}
+                  className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-medium rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  {secondaryCta.label}
                 </Link>
               ) : null}
-            </XStack>
+            </div>
           )}
-        </YStack>
+        </div>
         {visual ? (
-          <YStack flex={1} ai="center" jc="center">
+          <div className="flex-1 flex items-center justify-center">
             {visual}
-          </YStack>
+          </div>
         ) : null}
-      </XStack>
-    </YStack>
+      </div>
+    </section>
   )
 }
