@@ -1,4 +1,8 @@
 // @luxfi/gui — Lux-branded UI chrome on top of @hanzo/gui (Tamagui).
+// Types-only reference so the Tamagui config augmentation in ./gui.config is
+// visible when consumers use @luxfi/gui. The runtime config is exposed
+// separately via `@luxfi/gui/config`.
+import type {} from './gui.config'
 //
 // Usage:
 //   import { LuxHeader, LuxFooter, LuxHero, LuxFeatureGrid, LuxStatRow,

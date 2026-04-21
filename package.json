@@ -1,7 +1,7 @@
 {
   "name": "@luxfi/gui",
-  "version": "0.3.0",
-  "description": "Lux-branded UI chrome (Header, Footer, Hero, primitives) on top of @hanzo/gui (Tamagui)",
+  "version": "1.0.0",
+  "description": "Lux UI chrome on @hanzo/gui (Tamagui) — responsive header, footer, primitives for lux apps",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,6 +23,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/gui.config.d.ts",
+      "import": "./dist/gui.config.js"
+    },
+    "./gui.config": {
+      "types": "./dist/gui.config.d.ts",
+      "import": "./dist/gui.config.js"
     },
     "./header": {
       "types": "./dist/header/index.d.ts",
@@ -64,11 +72,14 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "@hanzo/gui": ">=4.7.0",
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
     "@hanzo/gui": "^4.7.2",
+    "@hanzogui/config": "^4.4.0",
+    "@hanzogui/web": "^4.4.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "react": "^18.3.0",

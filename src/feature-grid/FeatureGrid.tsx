@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { XStack, YStack, H2, H4, Paragraph, Text } from '@hanzo/gui'
 
 export type LuxFeature = {
   title: string
@@ -12,14 +13,12 @@ export type LuxFeatureGridProps = {
   features: readonly LuxFeature[]
   /** Columns on large screens. Default 3. */
   columns?: 2 | 3 | 4
-  /** Extra className applied to the outer `<section>`. */
-  className?: string
 }
 
-const gridCols: Record<2 | 3 | 4, string> = {
-  2: 'md:grid-cols-2',
-  3: 'md:grid-cols-3',
-  4: 'md:grid-cols-4',
+const minCardWidth: Record<2 | 3 | 4, number> = {
+  2: 320,
+  3: 280,
+  4: 240,
 }
 
 export const LuxFeatureGrid: React.FC<LuxFeatureGridProps> = ({
@@ -27,42 +26,68 @@ export const LuxFeatureGrid: React.FC<LuxFeatureGridProps> = ({
   eyebrow,
   features,
   columns = 3,
-  className,
-}) => (
-  <section
-    className={
-      'px-6 py-24 bg-black' + (className ? ` ${className}` : '')
-    }
-  >
-    <div className="max-w-7xl mx-auto flex flex-col gap-8">
-      {(eyebrow || heading) && (
-        <div className="flex flex-col gap-2 max-w-2xl">
-          {eyebrow ? (
-            <p className="text-xs tracking-widest uppercase text-white/60">
-              {eyebrow}
-            </p>
-          ) : null}
-          {heading ? (
-            <h2 className="text-3xl md:text-5xl font-bold leading-tight text-white">
-              {heading}
-            </h2>
-          ) : null}
-        </div>
-      )}
-      <div className={`grid gap-4 grid-cols-1 ${gridCols[columns]}`}>
-        {features.map((f) => (
-          <div
-            key={f.title}
-            className="flex flex-col gap-2 p-6 rounded-xl border border-white/10 bg-white/[0.02]"
-          >
-            {f.icon ? <div className="text-white mb-2">{f.icon}</div> : null}
-            <h3 className="text-lg font-semibold text-white">{f.title}</h3>
-            <p className="text-sm text-white/80 leading-relaxed">
-              {f.description}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-)
+}) => {
+  const minWidth = minCardWidth[columns]
+  return (
+    <YStack bg="$background" px="$6" py="$12" $gtMd={{ py: '$20' }}>
+      <YStack maxWidth={1280} width="100%" mx="auto" gap="$8">
+        {eyebrow || heading ? (
+          <YStack gap="$2" maxWidth={720}>
+            {eyebrow ? (
+              <Text
+                fontSize={12}
+                letterSpacing={2}
+                textTransform="uppercase"
+                color="rgba(255,255,255,0.6)"
+              >
+                {eyebrow}
+              </Text>
+            ) : null}
+            {heading ? (
+              <H2
+                color="$color"
+                fontWeight="700"
+                fontSize={32}
+                lineHeight={38}
+                $gtMd={{ fontSize: 48, lineHeight: 56 }}
+              >
+                {heading}
+              </H2>
+            ) : null}
+          </YStack>
+        ) : null}
+        <XStack flexWrap="wrap" gap="$4">
+          {features.map((f) => (
+            <YStack
+              key={f.title}
+              gap="$2"
+              p="$6"
+              borderRadius="$6"
+              borderWidth={1}
+              borderColor="rgba(255,255,255,0.1)"
+              bg="rgba(255,255,255,0.02)"
+              flex={1}
+              minWidth={minWidth}
+            >
+              {f.icon ? (
+                <YStack mb="$2" color="$color">
+                  {f.icon}
+                </YStack>
+              ) : null}
+              <H4 color="$color" fontSize={18} fontWeight="600">
+                {f.title}
+              </H4>
+              <Paragraph
+                fontSize={14}
+                color="rgba(255,255,255,0.8)"
+                lineHeight={22}
+              >
+                {f.description}
+              </Paragraph>
+            </YStack>
+          ))}
+        </XStack>
+      </YStack>
+    </YStack>
+  )
+}

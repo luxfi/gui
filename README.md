@@ -1,6 +1,15 @@
 # @luxfi/gui
 
-Lux-branded UI chrome built on top of [`@hanzo/gui`](https://github.com/hanzoai/gui) (Tamagui). Every Lux web property (`lux.network`, `lux.finance`, `lux.exchange`, `lux.financial`, `lux.cloud`, `lux.industries`, `lux.id`, etc.) consumes this package so header, footer, and primitives are identical across the portfolio.
+Lux UI chrome on [`@hanzo/gui`](https://github.com/hanzoai/gui) (Tamagui).
+Every Lux web property (`lux.network`, `lux.finance`, `lux.exchange`,
+`lux.financial`, `lux.cloud`, `lux.industries`, `lux.id`, etc.) consumes this
+package so header, footer, and primitives are identical across the portfolio.
+
+Components are Tamagui primitives (`YStack`, `XStack`, `H1`..`H6`, `Paragraph`,
+`Button`, `Popover`, `Sheet`, etc.) re-composed into Lux-branded surfaces.
+Responsive behavior uses Tamagui media queries (`$gtSm`, `$gtMd`, `$gtLg`) —
+no Tailwind, no runtime CSS — so the same components work on mobile, tablet,
+laptop, and desktop out of the box.
 
 ## What's in here
 
@@ -37,7 +46,27 @@ pnpm add @luxfi/gui @hanzo/gui react react-dom
 
 ## Use
 
+`@luxfi/gui` components are Tamagui-based. They must be rendered inside a
+`GuiProvider` from `@hanzo/gui`. The Lux config is exposed at
+`@luxfi/gui/config`.
+
 ```tsx
+// app/providers.tsx
+'use client'
+import { GuiProvider } from '@hanzo/gui'
+import luxConfig from '@luxfi/gui/config'
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <GuiProvider config={luxConfig} defaultTheme="lux_dark">
+      {children}
+    </GuiProvider>
+  )
+}
+```
+
+```tsx
+// any page
 import { LuxHeader, LuxFooter, LuxHero, LuxFeatureGrid } from '@luxfi/gui'
 import Link from 'next/link'
 
@@ -49,7 +78,7 @@ export default function Page() {
       <LuxHeader variant="finance" renderLink={renderLink} />
       <LuxHero
         eyebrow="Introducing Lux Finance"
-        title={<>Self-repaying loans<br/>on every asset.</>}
+        title={<>Self-repaying loans on every asset.</>}
         subtitle="Borrow against anything. Pay nothing."
         primaryCta={{ label: 'Get started', href: '/app' }}
         secondaryCta={{ label: 'Read docs', href: 'https://docs.lux.financial' }}

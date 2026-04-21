@@ -1,22 +1,22 @@
 import * as React from 'react'
+import { XStack, YStack, H2, Text } from '@hanzo/gui'
+
+export type LuxStatTone = 'neutral' | 'success' | 'danger'
 
 export type LuxStatCardProps = {
   label: string
   value: React.ReactNode
   delta?: React.ReactNode
-  /**
-   * Visual emphasis. 'danger' and 'success' color the delta.
-   */
-  tone?: 'neutral' | 'success' | 'danger'
+  /** Visual emphasis. 'danger' and 'success' color the delta. */
+  tone?: LuxStatTone
   /** Formatter hint, e.g. $ / %. Rendered as a small suffix. */
   suffix?: string
-  className?: string
 }
 
-const toneClass: Record<NonNullable<LuxStatCardProps['tone']>, string> = {
-  neutral: 'text-white',
-  success: 'text-emerald-400',
-  danger: 'text-red-400',
+const toneColor: Record<LuxStatTone, any> = {
+  neutral: '$color',
+  success: '#22C55E',
+  danger: '#EF4444',
 }
 
 export const LuxStatCard: React.FC<LuxStatCardProps> = ({
@@ -25,47 +25,59 @@ export const LuxStatCard: React.FC<LuxStatCardProps> = ({
   delta,
   tone = 'neutral',
   suffix,
-  className,
 }) => (
-  <div
-    className={
-      'flex flex-col gap-2 p-4 rounded-xl border border-white/10 bg-black' +
-      (className ? ` ${className}` : '')
-    }
+  <YStack
+    gap="$2"
+    p="$4"
+    borderRadius="$6"
+    borderWidth={1}
+    borderColor="rgba(255,255,255,0.1)"
+    bg="$background"
+    flex={1}
+    minWidth={200}
   >
-    <p className="text-xs text-white/60 uppercase tracking-widest">{label}</p>
-    <p className="text-3xl font-bold leading-none text-white">
-      {value}
+    <Text
+      fontSize={12}
+      letterSpacing={2}
+      textTransform="uppercase"
+      color="rgba(255,255,255,0.6)"
+    >
+      {label}
+    </Text>
+    <XStack items="baseline" gap="$1">
+      <H2 color="$color" fontSize={30} fontWeight="700" lineHeight={32}>
+        {value}
+      </H2>
       {suffix ? (
-        <span className="ml-1 text-lg font-medium text-white/60">
+        <Text fontSize={18} fontWeight="500" color="rgba(255,255,255,0.6)">
           {suffix}
-        </span>
+        </Text>
       ) : null}
-    </p>
+    </XStack>
     {delta !== undefined && delta !== null ? (
-      <p className={`text-sm ${toneClass[tone]}`}>{delta}</p>
+      <Text fontSize={14} color={toneColor[tone]}>
+        {delta}
+      </Text>
     ) : null}
-  </div>
+  </YStack>
 )
 
 export type LuxStatRowProps = {
   stats: readonly LuxStatCardProps[]
-  className?: string
 }
 
-export const LuxStatRow: React.FC<LuxStatRowProps> = ({
-  stats,
-  className,
-}) => (
-  <section
-    className={
-      'px-6 py-12 bg-black' + (className ? ` ${className}` : '')
-    }
-  >
-    <div className="max-w-7xl mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+export const LuxStatRow: React.FC<LuxStatRowProps> = ({ stats }) => (
+  <YStack bg="$background" px="$6" py="$8">
+    <XStack
+      maxWidth={1280}
+      width="100%"
+      mx="auto"
+      flexWrap="wrap"
+      gap="$4"
+    >
       {stats.map((s) => (
         <LuxStatCard key={s.label} {...s} />
       ))}
-    </div>
-  </section>
+    </XStack>
+  </YStack>
 )

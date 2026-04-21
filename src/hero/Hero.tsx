@@ -1,31 +1,28 @@
 import * as React from 'react'
+import { XStack, YStack, H1, Paragraph, Text, Button } from '@hanzo/gui'
+import type { LuxLinkRenderer } from '../header/Header'
+
+export type LuxHeroCta = {
+  label: string
+  href: string
+}
 
 export type LuxHeroProps = {
   eyebrow?: string
   title: React.ReactNode
   subtitle?: React.ReactNode
-  primaryCta?: { label: string; href: string }
-  secondaryCta?: { label: string; href: string }
+  primaryCta?: LuxHeroCta
+  secondaryCta?: LuxHeroCta
   /**
-   * Optional visual rendered to the right on large screens and below
-   * copy on small. Accepts any ReactNode (image, spline, video).
+   * Optional visual rendered to the right on large screens and below copy on small.
+   * Accepts any ReactNode (image, spline, video).
    */
   visual?: React.ReactNode
-  renderLink?: (props: {
-    href: string
-    children: React.ReactNode
-    className?: string
-  }) => React.ReactNode
-  /** Extra className applied to the outer `<section>`. */
-  className?: string
+  renderLink?: LuxLinkRenderer
 }
 
-const DefaultLink: NonNullable<LuxHeroProps['renderLink']> = ({
-  href,
-  children,
-  className,
-}) => (
-  <a href={href} className={className}>
+const DefaultLink: LuxLinkRenderer = ({ href, children }) => (
+  <a href={href} style={{ textDecoration: 'none', color: 'inherit' }}>
     {children}
   </a>
 )
@@ -38,57 +35,79 @@ export const LuxHero: React.FC<LuxHeroProps> = ({
   secondaryCta,
   visual,
   renderLink,
-  className,
 }) => {
   const Link = renderLink ?? DefaultLink
   return (
-    <section
-      className={
-        'px-6 py-24 bg-black' + (className ? ` ${className}` : '')
-      }
-    >
-      <div className="max-w-7xl mx-auto flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-        <div className="flex-1 flex flex-col gap-4 max-w-2xl">
+    <YStack bg="$background" px="$6" py="$12" $gtMd={{ py: '$20' }}>
+      <YStack
+        maxWidth={1280}
+        width="100%"
+        mx="auto"
+        gap="$8"
+        $gtMd={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <YStack flex={1} gap="$4" maxWidth={720}>
           {eyebrow ? (
-            <p className="text-xs tracking-widest uppercase text-white/60">
+            <Text
+              fontSize={12}
+              letterSpacing={2}
+              textTransform="uppercase"
+              color="rgba(255,255,255,0.6)"
+            >
               {eyebrow}
-            </p>
+            </Text>
           ) : null}
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.05] text-white">
+          <H1
+            color="$color"
+            fontWeight="800"
+            fontSize={48}
+            lineHeight={52}
+            $gtMd={{ fontSize: 72, lineHeight: 76 }}
+          >
             {title}
-          </h1>
+          </H1>
           {subtitle ? (
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed">
+            <Paragraph
+              size="$5"
+              color="rgba(255,255,255,0.8)"
+              lineHeight={28}
+              $gtMd={{ fontSize: 20, lineHeight: 32 }}
+            >
               {subtitle}
-            </p>
+            </Paragraph>
           ) : null}
-          {(primaryCta || secondaryCta) && (
-            <div className="flex flex-wrap gap-3 mt-2">
+          {primaryCta || secondaryCta ? (
+            <XStack flexWrap="wrap" gap="$3" mt="$2">
               {primaryCta ? (
-                <Link
-                  href={primaryCta.href}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-white/90 transition-colors"
-                >
-                  {primaryCta.label}
+                <Link href={primaryCta.href}>
+                  <Button size="$5" bg="$color" color="$background" borderRadius="$6">
+                    {primaryCta.label}
+                  </Button>
                 </Link>
               ) : null}
               {secondaryCta ? (
-                <Link
-                  href={secondaryCta.href}
-                  className="inline-flex items-center justify-center px-6 py-3 border border-white/20 text-white font-medium rounded-xl hover:bg-white/5 transition-colors"
-                >
-                  {secondaryCta.label}
+                <Link href={secondaryCta.href}>
+                  <Button
+                    size="$5"
+                    chromeless
+                    borderWidth={1}
+                    borderColor="rgba(255,255,255,0.2)"
+                    color="$color"
+                    borderRadius="$6"
+                  >
+                    {secondaryCta.label}
+                  </Button>
                 </Link>
               ) : null}
-            </div>
-          )}
-        </div>
+            </XStack>
+          ) : null}
+        </YStack>
         {visual ? (
-          <div className="flex-1 flex items-center justify-center">
+          <YStack flex={1} items="center" justify="center">
             {visual}
-          </div>
+          </YStack>
         ) : null}
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   )
 }
