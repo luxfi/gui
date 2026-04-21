@@ -22,13 +22,13 @@ function parseStreamLine(line: string): { type: 'text' | 'end'; value?: string }
   return null
 }
 
-export type LuxChatMessage = {
+export type ChatMessage = {
   id: string
   role: 'user' | 'assistant'
   content: string
 }
 
-export type LuxChatWidgetProps = {
+export type ChatWidgetProps = {
   /**
    * Auth token for hanzo/cloud. Accepts widget keys (hz_*) or publishable keys
    * (pk-*). Widget keys are origin-restricted and rate-limited by the gateway;
@@ -37,9 +37,9 @@ export type LuxChatWidgetProps = {
   authToken: string
   /** Override the chat-docs endpoint. Default: https://api.hanzo.ai/v1/chat-docs */
   endpoint?: string
-  /** Widget title. Default: "Lux AI". */
+  /** Widget title. Default: "AI Assistant". */
   title?: string
-  /** Subtitle. Default: "Ask anything about Lux". */
+  /** Subtitle. Default: "Ask anything". */
   subtitle?: string
   /** Current page URL/path used as RAG context hint. */
   pageContext?: string
@@ -50,28 +50,28 @@ export type LuxChatWidgetProps = {
 }
 
 const DEFAULT_SUGGESTIONS = [
-  'What is Lux?',
-  'Show me the MPC architecture',
-  'How does post-quantum crypto work here?',
-  'Where do I start with the API?',
+  'What can you help me with?',
+  'How do I get started?',
+  'Show me the API docs',
+  'Explain the security model',
 ]
 
 /**
  * Floating chat widget that streams RAG-backed answers from hanzo/cloud's
- * /v1/chat-docs endpoint using a publishable key (pk-*). Safe to embed in
- * public pages — the key is origin-scoped server-side.
+ * /v1/chat-docs endpoint. Safe to embed in public pages — widget-key auth
+ * is origin-scoped at the gateway.
  */
-export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
+export const ChatWidget: React.FC<ChatWidgetProps> = ({
   authToken,
   endpoint = 'https://api.hanzo.ai/v1/chat-docs',
-  title = 'Lux AI',
-  subtitle = 'Ask anything about Lux',
+  title = 'AI Assistant',
+  subtitle = 'Ask anything',
   pageContext,
   suggestions = DEFAULT_SUGGESTIONS,
   defaultOpen = false,
 }) => {
   const [open, setOpen] = React.useState(defaultOpen)
-  const [messages, setMessages] = React.useState<LuxChatMessage[]>([])
+  const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [input, setInput] = React.useState('')
   const [busy, setBusy] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
@@ -85,7 +85,7 @@ export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
     async (text: string) => {
       const query = text.trim()
       if (!query || busy) return
-      const userMsg: LuxChatMessage = { id: String(Date.now()), role: 'user', content: query }
+      const userMsg: ChatMessage = { id: String(Date.now()), role: 'user', content: query }
       setMessages((prev) => [...prev, userMsg])
       setInput('')
       setBusy(true)
@@ -143,7 +143,7 @@ export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
                   ...m,
                   content:
                     m.content ||
-                    `I hit a snag (${msg}). Try docs.lux.financial or blog.lux.network while I reconnect.`,
+                    `I hit a snag (${msg}). Please try again shortly.`,
                 }
               : m,
           ),
@@ -229,7 +229,7 @@ export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
         {messages.length === 0 && (
           <YStack gap="$2">
             <Text color="$color11" fontSize="$2">
-              Ask about Lux products, post-quantum crypto, MPC, APIs, or docs.
+              Ask about products, features, APIs, or docs.
             </Text>
             <XStack flexWrap="wrap" gap="$2">
               {suggestions.map((s) => (

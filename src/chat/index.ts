@@ -1,1 +1,1 @@
-export * from './LuxChatWidget'
+export * from './ChatWidget'
