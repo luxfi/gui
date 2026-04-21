@@ -29,8 +29,12 @@ export type LuxChatMessage = {
 }
 
 export type LuxChatWidgetProps = {
-  /** Publishable key (pk-*) for hanzo/cloud. Required. */
-  publishableKey: string
+  /**
+   * Auth token for hanzo/cloud. Accepts widget keys (hz_*) or publishable keys
+   * (pk-*). Widget keys are origin-restricted and rate-limited by the gateway;
+   * pk-* keys go through full IAM and are account-scoped.
+   */
+  authToken: string
   /** Override the chat-docs endpoint. Default: https://api.hanzo.ai/v1/chat-docs */
   endpoint?: string
   /** Widget title. Default: "Lux AI". */
@@ -58,7 +62,7 @@ const DEFAULT_SUGGESTIONS = [
  * public pages — the key is origin-scoped server-side.
  */
 export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
-  publishableKey,
+  authToken,
   endpoint = 'https://api.hanzo.ai/v1/chat-docs',
   title = 'Lux AI',
   subtitle = 'Ask anything about Lux',
@@ -101,7 +105,7 @@ export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${publishableKey}`,
+            Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({ messages: withContext }),
           signal: controller.signal,
@@ -149,7 +153,7 @@ export const LuxChatWidget: React.FC<LuxChatWidgetProps> = ({
         abortRef.current = null
       }
     },
-    [busy, endpoint, messages, pageContext, publishableKey],
+    [authToken, busy, endpoint, messages, pageContext],
   )
 
   if (!open) {
