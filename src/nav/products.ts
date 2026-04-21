@@ -48,6 +48,25 @@ export const LUX_PRODUCTS: readonly LuxNavSection[] = [
       { name: 'GitHub', href: 'https://github.com/luxfi', external: true },
     ],
   },
+  {
+    section: 'Research',
+    items: [
+      { name: 'Lux Papers', href: 'https://github.com/luxfi/papers', desc: 'Consensus, PQ crypto, FHE, DeFi', external: true },
+      { name: 'Lux Proofs', href: 'https://github.com/luxfi/proofs', desc: 'Formal verification (Lean4, TLA+, Tamarin)', external: true },
+      { name: 'Hanzo Papers', href: 'https://github.com/hanzoai/papers', desc: 'AI/ML, HMM, ASO, agents', external: true },
+      { name: 'Zoo Papers', href: 'https://github.com/zooai/papers', desc: 'DeSci and conservation AI', external: true },
+      { name: 'Lux Audits', href: 'https://github.com/luxfi/audits', desc: 'Independent security audits', external: true },
+    ],
+  },
+  {
+    section: 'Open Source',
+    items: [
+      { name: 'Lux on GitHub', href: 'https://github.com/luxfi', external: true },
+      { name: 'Hanzo on GitHub', href: 'https://github.com/hanzoai', external: true },
+      { name: 'Zoo on GitHub', href: 'https://github.com/zooai', external: true },
+      { name: 'Hanzo S3', href: 'https://github.com/hanzos3', external: true },
+    ],
+  },
 ] as const
 
 // Variant -> product key. Used to highlight the active section in <LuxHeader>.
