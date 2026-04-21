@@ -64,6 +64,14 @@ export type LuxVariant =
   | 'cloud'
   | 'id'
   | 'industries'
+  | 'bitcoin'
+  | 'coin'
+  | 'vote'
+  | 'shop'
+  | 'cash'
+  | 'partners'
+  | 'quest'
+  | 'help'
   | 'docs'
   | 'default'
 
@@ -80,6 +88,14 @@ export const LUX_VARIANT_HREF: Record<LuxVariant, string> = {
   cloud: 'https://lux.cloud',
   id: 'https://lux.id',
   industries: 'https://lux.industries',
+  bitcoin: 'https://lux.bitcoin',
+  coin: 'https://lux.coin',
+  vote: 'https://vote.lux.network',
+  shop: 'https://lux.shop',
+  cash: 'https://lux.cash',
+  partners: 'https://lux.partners',
+  quest: 'https://lux.quest',
+  help: 'https://lux.help',
   docs: 'https://docs.lux.network',
   default: 'https://lux.network',
 }

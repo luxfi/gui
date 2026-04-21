@@ -1,6 +1,6 @@
 {
   "name": "@luxfi/gui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Lux-branded UI chrome (Header, Footer, Hero, primitives) on top of @hanzo/gui (Tamagui)",
   "license": "MIT",
   "repository": {
