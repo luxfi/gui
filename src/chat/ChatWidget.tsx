@@ -36,9 +36,9 @@ export type ChatWidgetProps = {
    */
   authToken: string
   /**
-   * Override the endpoint. Accepts two shapes:
-   *   - /v1/chat/completions (OpenAI — returns JSON or SSE) — default.
-   *   - /v1/chat-docs (AI SDK v4 data stream) — enables RAG.
+   * Override the endpoint. Default: https://api.hanzo.ai/v1/chat — unified
+   * OpenAI-compatible chat with optional retrieval. Point at any OpenAI-
+   * compatible endpoint to swap providers.
    */
   endpoint?: string
   /** Model for /v1/chat/completions (ignored for chat-docs). Default: claude-haiku-4-5. */
@@ -69,7 +69,7 @@ const DEFAULT_SUGGESTIONS = [
  */
 export const ChatWidget: React.FC<ChatWidgetProps> = ({
   authToken,
-  endpoint = 'https://api.hanzo.ai/v1/chat/completions',
+  endpoint = 'https://api.hanzo.ai/v1/chat',
   model = 'claude-haiku-4-5',
   title = 'AI Assistant',
   subtitle = 'Ask anything',
@@ -108,11 +108,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }])
 
       try {
-        const isChatDocs = endpoint.includes('/chat-docs')
-        const body: Record<string, unknown> = { messages: withContext }
-        if (!isChatDocs) {
-          body.model = model
-          body.max_tokens = 500
+        const body: Record<string, unknown> = {
+          messages: withContext,
+          model,
+          max_tokens: 500,
         }
         const res = await fetch(endpoint, {
           method: 'POST',
